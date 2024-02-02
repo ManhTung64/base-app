@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./entities/user.entity";
+import { Role, User } from "./entities/user.entity";
 import { Repository, UpdateResult } from "typeorm";
 import { CreateUserDto } from "./dto/user.dto";
 import { BaseRepository } from "src/base/base.repository";
@@ -20,7 +20,6 @@ export class UserRepository extends BaseRepository<User>{
     }
     public async findOneByUsername (inputUsername:string):Promise<User>{
         try{
-            await this.userRepository.findOneBy({id:1})
             return await this.userRepository.findOneBy({username:inputUsername})
         }catch(error){
             return null

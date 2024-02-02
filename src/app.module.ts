@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { Profile } from './user/entities/profile.entity';
+import { InterceptorModule } from './interceptor/interceptor.module';
 
 @Module({
   imports: [UserModule, TypeOrmModule.forRoot({
@@ -15,7 +16,7 @@ import { Profile } from './user/entities/profile.entity';
     database: 'test',
     entities:[User,Profile],
     synchronize: true, // shoudl: dev env
-  }), AuthModule,],
+  }), AuthModule, InterceptorModule,],
   controllers: [],
   providers: [],
 })
