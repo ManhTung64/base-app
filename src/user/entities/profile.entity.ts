@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user.entity";
 
 @Entity({name:'profile'})
@@ -6,7 +6,7 @@ export class Profile{
     @PrimaryGeneratedColumn({type:'bigint'})
     id:number
 
-    @Column()
+    @Column("varchar")
     name:string
 
     @Column({nullable:true})
@@ -14,6 +14,10 @@ export class Profile{
 
     @Column({nullable:true})
     phonenumber:string
+    
+    @CreateDateColumn()
+    @UpdateDateColumn()
+    updateAt:Date
 
     @OneToOne(()=>User,user=>user.id)
     @JoinColumn()
