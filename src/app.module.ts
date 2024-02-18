@@ -1,23 +1,32 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { Profile } from './user/entities/profile.entity';
 import { InterceptorModule } from './interceptor/interceptor.module';
+import { ConfigurationModule } from './configuration/configuration.module';
+import { PostModule } from './post/post.module';
+import { GroupModule } from './group/group.module';
+import ormconfig = require('./configuration/typeorm.config')
+import { AppGateway } from './event.gateway';
+import { MailModule } from './mail/mail.module';
+import { BullModule } from '@nestjs/bull';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SchedulingModule } from './scheduling/scheduling.module';
 
 @Module({
-  imports: [UserModule, TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'postgres',
-    password: 'Manhtung1@',
-    database: 'test',
-    entities:[User,Profile],
-    synchronize: true, // shoudl: dev env
-  }), AuthModule, InterceptorModule,],
+  imports: [
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        redis: {
+          host: config.get('REDIS_HOST'),
+          port: config.get('REDIS_PORT'),
+          password: config.get('REDIS_PASSWORD'),
+        },
+      }),
+      inject: [ConfigService],
+    }),UserModule, TypeOrmModule.forRoot(ormconfig[0]), AuthModule, InterceptorModule, ConfigurationModule, PostModule, GroupModule, MailModule, SchedulingModule],
   controllers: [],
-  providers: [],
+  providers: [AppGateway],
 })
 export class AppModule {}
