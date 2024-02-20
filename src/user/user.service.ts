@@ -3,13 +3,14 @@ import { UserRepository } from './user.repository';
 import { CreateUserDto, LoginDto, UserDto, UserTokenDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { PasswordService } from './password/password.service';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { ProfileService } from './profile/profile.service';
 import { Profile } from './entities/profile.entity';
 import { UpdateDto } from './dto/profile.dto';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { MailCode } from 'src/mail/dto/mail.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -50,9 +51,6 @@ export class UserService {
     public async login(loginDto: LoginDto): Promise<UserTokenDto> {
         // check exsited
         const user: User = await this.userRepository.findOneByUsername(loginDto.username)
-                //queue send mail verify
-                const mailInformation:MailCode = {to:loginDto.username}
-                await this.queue.add('send-code',{to:loginDto.username},{removeOnComplete:true})
         if (!user) throw new BadRequestException('Information is invalid')
 
         // check valid password

@@ -1,10 +1,10 @@
-import { BaseRepository } from "src/base/base.repository";
+import { BaseRepository } from "../base/base.repository";
 import { PostContent } from "./entities/post.entity";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreatePost } from "./dto/post.dto";
-import { Profile } from "src/user/entities/profile.entity";
+import { Profile } from "../user/entities/profile.entity";
 
 @Injectable()
 export class PostRepository extends BaseRepository<PostContent>{

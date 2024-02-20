@@ -1,8 +1,8 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { MailCode } from './dto/mail.dto';
-import { UserRepository } from 'src/user/user.repository';
-import { User } from 'src/user/entities/user.entity';
+import { UserRepository } from '../user/user.repository';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MailService {

@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Role, User } from "./entities/user.entity";
 import { LessThan, Repository, UpdateResult } from "typeorm";
 import { CreateUserDto } from "./dto/user.dto";
-import { BaseRepository } from "src/base/base.repository";
+import { BaseRepository } from "../base/base.repository";
 import { Profile } from "./entities/profile.entity";
 import { UpdateDto } from "./dto/profile.dto";
 

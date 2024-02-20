@@ -18,7 +18,7 @@ export class UserDto{
         this.createAt = createAt
     }
     username:string
-    password:string
+    // password:string
     isActive:boolean
     createAt:Date
 }

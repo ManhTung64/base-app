@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { PasswordService } from './password/password.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile/profile.service';
 import { ProfileRepository } from './profile/profile.repository';
 import { BullModule } from '@nestjs/bull';
 import { MailConsumer } from './consumer/mail.consumer';
-import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports:[
@@ -21,7 +21,7 @@ import { MailModule } from 'src/mail/mail.module';
     BullModule.registerQueue({
         name:'mail-queue'
     }),
-    MailModule
+    forwardRef(()=>MailModule) 
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository, PasswordService, ProfileService, ProfileRepository, MailConsumer],

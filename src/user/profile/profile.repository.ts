@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, UpdateResult } from "typeorm";
 import { Profile } from "../entities/profile.entity";
-import { BaseRepository } from "src/base/base.repository";
+import { BaseRepository } from "../../base/base.repository";
 import { User } from "../entities/user.entity";
-import { Group } from "src/group/entities/group.entity";
+import { Group } from "../../group/entities/group.entity";
 
 @Injectable()
 export class ProfileRepository extends BaseRepository<Profile>{

@@ -2,11 +2,11 @@ import { BadRequestException, Body, Controller, FileTypeValidator, Get, HttpCode
 import { UserService } from './user.service';
 import { Response, Request } from 'express';
 import { CreateUserDto, LoginDto, UserDto, UserTokenDto } from './dto/user.dto';
-import { AuthenticationGuard } from 'src/auth/auth.guard';
+import { AuthenticationGuard } from '../auth/auth.guard';
 import { Role, User } from './entities/user.entity';
-import { RolesGuard } from 'src/auth/role.guard';
-import { Roles } from 'src/auth/role.decorator';
-import { CacheInterceptor } from 'src/interceptor/cache.interceptor';
+import { RolesGuard } from '../auth/role.guard';
+import { Roles } from '../auth/role.decorator';
+import { CacheInterceptor } from '../interceptor/cache.interceptor';
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateDto } from './dto/profile.dto';
 import { Profile } from './entities/profile.entity';
@@ -18,8 +18,8 @@ export class UserController {
 
     }
     @Get('/getall')
-    @UseGuards(AuthenticationGuard, RolesGuard)
-    @Roles(Role.user)
+//     @UseGuards(AuthenticationGuard, RolesGuard)
+//     @Roles(Role.user)
     @UseInterceptors(CacheInterceptor)
     async getAll (@Req() req:Request, @Res() res:Response){
             const data:Array<UserDto> = await this.userService.getAllUser()

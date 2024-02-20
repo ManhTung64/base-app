@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional, MinLength } from "class-validator"
-import { Profile } from "src/user/entities/profile.entity"
+import { Profile } from "../../user/entities/profile.entity"
 
 export class CreatePost{
     @IsNotEmpty()

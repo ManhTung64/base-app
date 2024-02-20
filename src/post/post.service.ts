@@ -2,8 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreatePost, UpdatePost } from './dto/post.dto';
 import { PostContent } from './entities/post.entity';
 import { PostRepository } from './post.repository';
-import { ProfileRepository } from 'src/user/profile/profile.repository';
-import { Profile } from 'src/user/entities/profile.entity';
+import { ProfileRepository } from '../user/profile/profile.repository';
+import { Profile } from '../user/entities/profile.entity';
 
 @Injectable()
 export class PostService {

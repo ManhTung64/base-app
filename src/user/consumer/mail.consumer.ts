@@ -1,7 +1,7 @@
 import { Process, Processor } from "@nestjs/bull";
-import { MailCode } from "src/mail/dto/mail.dto";
+import { MailCode } from "../../mail/dto/mail.dto";
 import { UserService } from "../user.service";
-import { MailService } from "src/mail/mail.service";
+import { MailService } from "../../mail/mail.service";
 import { Job } from "bull";
 
 @Processor('mail-queue')

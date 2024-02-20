@@ -1,13 +1,13 @@
 import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Put, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
-import { AuthenticationGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/role.guard';
-import { Roles } from 'src/auth/role.decorator';
-import { Role } from 'src/user/entities/user.entity';
+import { AuthenticationGuard } from '../auth/auth.guard';
+import { RolesGuard } from '../auth/role.guard';
+import { Roles } from '../auth/role.decorator';
+import { Role } from '../user/entities/user.entity';
 import { CreatePost, UpdatePost } from './dto/post.dto';
 import { PostContent } from './entities/post.entity';
 import {Request,Response} from 'express'
-import { CacheInterceptor } from 'src/interceptor/cache.interceptor';
+import { CacheInterceptor } from '../interceptor/cache.interceptor';
 
 @Controller('api/post')
 export class PostController {
