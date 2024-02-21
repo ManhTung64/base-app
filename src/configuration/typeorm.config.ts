@@ -7,7 +7,7 @@ dotenv.config();
 export = [
   {
     type: 'postgres',
-    host: 'localhost',
+    host: 'my_database',
     port: 5432,
     username: 'postgres',
     password: 'Manhtung1@',
