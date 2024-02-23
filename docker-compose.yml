@@ -2,7 +2,7 @@ version: '3'
 
 services:
   web:
-    image: base-app:v8
+    image: base-app:v15
     depends_on: 
       - postgres
     working_dir: /app
@@ -11,7 +11,7 @@ services:
   postgres:
     image: database:v1
     environment:
-      POSTGRES_DB: test
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "Manhtung1@"
     ports:
