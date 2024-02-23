@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, FileTypeValidator, Get, HttpCode, HttpException, HttpStatus, MaxFileSizeValidator, NotFoundException, Param, ParseFilePipe, ParseFilePipeBuilder, ParseIntPipe, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, FileTypeValidator, Get, HttpCode, HttpException, HttpStatus, MaxFileSizeValidator, NotFoundException, Param, ParseFilePipe, ParseFilePipeBuilder, ParseIntPipe, Patch, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Response, Request } from 'express';
 import { CreateUserDto, LoginDto, UserDto, UserTokenDto } from './dto/user.dto';
@@ -10,7 +10,7 @@ import { CacheInterceptor } from '../interceptor/cache.interceptor';
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateDto } from './dto/profile.dto';
 import { Profile } from './entities/profile.entity';
-import { rmSync } from 'fs';
+import { UserVerifyCodeDto } from './dto/code.dto';
 
 @Controller('api/user')
 export class UserController {
@@ -18,33 +18,56 @@ export class UserController {
 
     }
     @Get('/getall')
-//     @UseGuards(AuthenticationGuard, RolesGuard)
-//     @Roles(Role.user)
+    @UseGuards(AuthenticationGuard, RolesGuard)
+    @Roles(Role.user)
     @UseInterceptors(CacheInterceptor)
-    async getAll (@Req() req:Request, @Res() res:Response){
+    async getAll (
+        @Req() req:Request, 
+        @Res() res:Response){
             const data:Array<UserDto> = await this.userService.getAllUser()
             return res.status(HttpStatus.OK).json({data})
     }
     @Get('/getonewithprofile')
     @UseGuards(AuthenticationGuard)
-    async getOneWithProfile (@Req() req:Request, @Res() res:Response){
+    async getOneWithProfile (
+        @Req() req:Request, 
+        @Res() res:Response){
             const data:User = await this.userService.getUserWithProfile(req['user'].username)
             return res.status(HttpStatus.OK).json({data})
     }
     @Post('/addnew')
-    async createNewUser (@Body() createNewUser:CreateUserDto, @Res() res:Response){
+    async createNewUser (
+        @Body() createNewUser:CreateUserDto, 
+        @Res() res:Response){
             const data:UserDto = await this.userService.createNewUser(createNewUser)
             return res.status(HttpStatus.OK).json({data})
     }
     @Put(':id')
-    async updateInformation (@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE})) id:number, @Body() update:UpdateDto, @Res() res:Response){
+    async updateInformation (
+        @Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE})) id:number, 
+        @Body() update:UpdateDto, 
+        @Res() res:Response){
             const data:Profile = await this.userService.updateProfile(id,update)
             return res.status(HttpStatus.OK).json({data:data})
     }
     @Post('/login')
-    async login (@Body() loginInfo:LoginDto, @Res() res:Response){
+    async login (
+        @Body() loginInfo:LoginDto, 
+        @Res() res:Response){
             const data:UserTokenDto = await this.userService.login(loginInfo)
             return res.status(HttpStatus.OK).json({data})
+    }
+    @Patch('verify')
+    @UseGuards(AuthenticationGuard)
+    async verifyUser (
+        @Req() req:Request,
+        @Res() res:Response,
+        @Body() body:UserVerifyCodeDto
+    ){
+        body.userId = req['user'].userId
+        const isVerify:boolean = await this.userService.verifyUser(body)
+        if (!isVerify) return res.status(HttpStatus.BAD_REQUEST).json({message:"Code is invalid or expried"})
+        else return res.status(HttpStatus.OK).json({})
     }
     @Post('/uploadsinglefile')
     @UseInterceptors(FileInterceptor('file'))

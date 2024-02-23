@@ -3,4 +3,5 @@ export class MailCode{
     subject?:string
     context?:string
     code?:string
+    userId:string
 }

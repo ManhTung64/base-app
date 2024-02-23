@@ -10,15 +10,16 @@ import { UpdateDto } from './dto/profile.dto';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { MailCode } from 'src/mail/dto/mail.dto';
-import { plainToClass } from 'class-transformer';
+import { UserVerifyCodeDto } from './dto/code.dto';
+import { CodeService } from './code.service';
 
 @Injectable()
 export class UserService {
-    private MIN:number = 100000
-    private MAX:number = 999999
+
     constructor(@InjectQueue('mail-queue') private readonly queue:Queue,
     private userRepository: UserRepository, private readonly passwordService: PasswordService,
-        private readonly authService: AuthService, private readonly profileService: ProfileService,) {
+        private readonly authService: AuthService, private readonly profileService: ProfileService,
+        private readonly codeService:CodeService) {
 
     }
     public async getAllUser(): Promise<UserDto[]> {
@@ -41,18 +42,29 @@ export class UserService {
         createUserDto.password = await this.passwordService.hashPassword(createUserDto.password)
         const newUser: User = await this.userRepository.createNew(createUserDto)
         //queue send mail verify
-        const mailInformation:MailCode = {to:createUserDto.username}
+        const mailInformation:MailCode = {to:createUserDto.username, userId:newUser.id.toString()}
         await this.queue.add('send-code',mailInformation,{removeOnComplete:true})
         // create default profile with null information
         const profile: Profile = await this.profileService.createDefaultProfile(newUser)
         await this.userRepository.update(newUser, profile)
         return new UserDto(newUser.username, newUser.isActive, newUser.createAt)
     }
+    public async verifyUser (userVerifyCode:UserVerifyCodeDto):Promise<boolean>{
+        const user:User = await this.userRepository.findOneById(parseInt(userVerifyCode.userId))
+        // user not found or active user => reject
+        if (!user || user.isActive) throw new BadRequestException()
+        // check code is invalid ?
+        else if (!this.codeService.checkCode(userVerifyCode.userId, userVerifyCode.code)) return false
+        user.isActive = true
+        await this.userRepository.save(user)
+        return true
+    }
     public async login(loginDto: LoginDto): Promise<UserTokenDto> {
         // check exsited
         const user: User = await this.userRepository.findOneByUsername(loginDto.username)
         if (!user) throw new BadRequestException('Information is invalid')
-
+        // account not active
+        else if (!user.isActive) throw new BadRequestException('Account is not active')
         // check valid password
         else if (!await this.passwordService.verifyPassword(user.password, loginDto.password)) throw new BadRequestException('Information is invalid')
         // return with token
@@ -63,9 +75,5 @@ export class UserService {
         if (!user) throw new BadRequestException('User is invalid')
         return await this.userRepository.update(user, updateDto)
     }
-    public createCode() {
-        const randomNumber = Math.floor(Math.random() * (this.MAX - this.MIN + 1)) + this.MIN;
-        const randomString = randomNumber.toString();
-        return randomString;
-    }
+
 }

@@ -12,6 +12,7 @@ import { ProfileRepository } from './profile/profile.repository';
 import { BullModule } from '@nestjs/bull';
 import { MailConsumer } from './consumer/mail.consumer';
 import { MailModule } from '../mail/mail.module';
+import { CodeService } from './code.service';
 
 @Module({
   imports:[
@@ -24,7 +25,7 @@ import { MailModule } from '../mail/mail.module';
     forwardRef(()=>MailModule) 
   ],
   controllers: [UserController],
-  providers: [UserService, UserRepository, PasswordService, ProfileService, ProfileRepository, MailConsumer],
-  exports:[ProfileRepository, UserRepository]
+  providers: [UserService, UserRepository, PasswordService, ProfileService, ProfileRepository, MailConsumer, CodeService],
+  exports:[ProfileRepository, UserRepository, CodeService]
 })
 export class UserModule {}

@@ -23,8 +23,12 @@ export class UserRepository extends BaseRepository<User>{
     }
     public async update(user: User, updateDto: UpdateDto): Promise<Profile> {
         user.profile = { ...user.profile, name: updateDto.name, phonenumber: updateDto.phonenumber, dob: updateDto.dob }
-        await this.userRepository.save(user)
+        await this.save(user)
         return user.profile
+    }
+    public async save(user:User):Promise<User>{
+        await this.userRepository.save(user)
+        return user
     }
     public async findAllNewUser(): Promise<User[]> {
         return await this.userRepository.find({where:{createAt:LessThan(new Date())}})
