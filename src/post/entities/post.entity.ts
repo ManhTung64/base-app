@@ -12,6 +12,9 @@ export class PostContent{
     @Column()
     content:string
 
+    @Column({nullable:true, type:'jsonb'})
+    files:FileInfo[]
+
     @CreateDateColumn()
     @UpdateDateColumn()
     updateAt:Date
@@ -20,3 +23,8 @@ export class PostContent{
     @JoinColumn()
     user: Profile;
 }
+export interface FileInfo {
+    type: string
+    url: string
+    no:number
+  }

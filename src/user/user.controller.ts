@@ -11,10 +11,11 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestj
 import { UpdateDto } from './dto/profile.dto';
 import { Profile } from './entities/profile.entity';
 import { UserVerifyCodeDto } from './dto/code.dto';
+import { ProfileService } from './profile/profile.service';
 
 @Controller('api/user')
 export class UserController {
-    constructor(private readonly userService:UserService){
+    constructor(private readonly userService:UserService, profileService:ProfileService){
 
     }
     @Get('/getall')
@@ -47,7 +48,7 @@ export class UserController {
         @Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE})) id:number, 
         @Body() update:UpdateDto, 
         @Res() res:Response){
-            const data:Profile = await this.userService.updateProfile(id,update)
+            const data:Profile = await this.userService.updateProfile(update)
             return res.status(HttpStatus.OK).json({data:data})
     }
     @Post('/login')
@@ -69,17 +70,24 @@ export class UserController {
         if (!isVerify) return res.status(HttpStatus.BAD_REQUEST).json({message:"Code is invalid or expried"})
         else return res.status(HttpStatus.OK).json({})
     }
-    @Post('/uploadsinglefile')
+    @Post('/updateprofile')
+    @UseGuards(AuthenticationGuard)
     @UseInterceptors(FileInterceptor('file'))
-    async uploadSingleFile (@UploadedFile(
+    async uploadSingleFile (
+    @UploadedFile(
         new ParseFilePipe({
             validators:[
-                new MaxFileSizeValidator({maxSize:100000,message:'File is so large'}),
+                new MaxFileSizeValidator({maxSize:100000, message:'File is so large'}),
                 new FileTypeValidator({fileType:'image'})
             ]
         })
-    ) file:Express.Multer.File, @Res() res:Response){
-            return res.status(HttpStatus.OK).json()
+    ) file:Express.Multer.File, 
+    @Req() req:Request,
+    @Body() updateProfile:UpdateDto,
+    @Res() res:Response){
+        updateProfile.id = req['user'].userId
+        if (file) updateProfile.avatar = file
+
     }
     @Post('/uploadmanyfile')
     @UseInterceptors(FilesInterceptor('files',3))

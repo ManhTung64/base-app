@@ -25,7 +25,7 @@ export class User {
     @Column({default:Role.user})
     role:Role
 
-    @OneToOne(()=>Profile,profile=>profile.user)
+    @OneToOne(()=>Profile,profile=>profile.id, {cascade:['update']})
     @JoinColumn()
     profile:Profile
 }

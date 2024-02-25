@@ -13,6 +13,7 @@ import { BullModule } from '@nestjs/bull';
 import { MailConsumer } from './consumer/mail.consumer';
 import { MailModule } from '../mail/mail.module';
 import { CodeService } from './code.service';
+import { FileModule } from '../file/file.module';
 
 @Module({
   imports:[
@@ -22,7 +23,8 @@ import { CodeService } from './code.service';
     BullModule.registerQueue({
         name:'mail-queue'
     }),
-    forwardRef(()=>MailModule) 
+    forwardRef(()=>MailModule),
+    forwardRef(()=>FileModule)
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository, PasswordService, ProfileService, ProfileRepository, MailConsumer, CodeService],

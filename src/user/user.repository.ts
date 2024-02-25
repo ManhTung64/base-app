@@ -21,7 +21,7 @@ export class UserRepository extends BaseRepository<User>{
     public async findOneById(id: number): Promise<User> {
         return await this.userRepository.findOne({ where: { id: id } })
     }
-    public async update(user: User, updateDto: UpdateDto): Promise<Profile> {
+    public async update(user: User, updateDto: Profile): Promise<Profile> {
         user.profile = { ...user.profile, name: updateDto.name, phonenumber: updateDto.phonenumber, dob: updateDto.dob }
         await this.save(user)
         return user.profile

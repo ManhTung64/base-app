@@ -21,7 +21,7 @@ export class Profile {
     @UpdateDateColumn()
     updateAt: Date
 
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => User, user => user.id,{cascade:['update']})
     @JoinColumn()
     user: User
 
@@ -32,4 +32,7 @@ export class Profile {
     @ManyToMany(() => Group, group => group.members,{onDelete:'CASCADE'})
     @JoinTable({name:'member_group'})
     groups: Group[];
+
+    @Column({nullable:true})
+    avatar:string
 }

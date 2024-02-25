@@ -4,16 +4,20 @@ import { PostContent } from './entities/post.entity';
 import { PostRepository } from './post.repository';
 import { ProfileRepository } from '../user/profile/profile.repository';
 import { Profile } from '../user/entities/profile.entity';
+import { UploadFile } from 'src/file/dto/file.dto';
+import { FileService } from 'src/file/file.service';
 
 @Injectable()
 export class PostService {
-    constructor(private readonly postRepository: PostRepository, private readonly profileRepository: ProfileRepository) { }
+    constructor(private readonly postRepository: PostRepository, private readonly profileRepository: ProfileRepository,
+        private readonly fileService:FileService) { }
 
-    public async create(newPost: CreatePost): Promise<PostContent> {
+    public async create(newPost: CreatePost, files:UploadFile[]): Promise<PostContent> {
         // check ex user
         const profile: Profile = await this.profileRepository.findOneById(newPost.userId)
         if (!profile) throw new BadRequestException()
         newPost.user = profile
+        if (files.length > 0) newPost.files = await this.fileService.uploadImagesOfPost(files)
         // add new
         return await this.postRepository.createNew(newPost)
     }

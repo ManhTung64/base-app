@@ -70,10 +70,12 @@ export class UserService {
         // return with token
         else return new UserTokenDto(user.username, user.isActive, user.createAt, await this.authService.createToken(user))
     }
-    public async updateProfile(id: number, updateDto: UpdateDto): Promise<Profile> {
-        const user: User = await this.userRepository.findOneById(id)
+    public async updateProfile(updateDto: UpdateDto): Promise<Profile> {
+        const user: User = await this.userRepository.findOneById(updateDto.id)
         if (!user) throw new BadRequestException('User is invalid')
-        return await this.userRepository.update(user, updateDto)
+        const updateProfile:Profile = await this.profileService.update(user.profile, updateDto)
+        user.profile = updateProfile
+        await this.userRepository.save(user)
+        return user.profile
     }
-
 }
