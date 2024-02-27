@@ -1,6 +1,6 @@
 import s3Config from "src/configuration/s3.config";
 import { UploadFile } from "./dto/file.dto";
-import { ObjectCannedACL, PutObjectAclCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { CompleteMultipartUploadCommand, CreateMultipartUploadCommand, ObjectCannedACL, PutObjectAclCommand, PutObjectCommand, UploadPartCommand } from "@aws-sdk/client-s3";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
@@ -14,7 +14,7 @@ export class S3Service {
         const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         return randomNumber;
     }
-    private createParamsUpload = (file: UploadFile) => {
+    public createParamsUpload = (file: UploadFile) => {
         const params = {
             Bucket: this.bucketName,
             Key: `${this.avatarFolder}${this.generateRandom8DigitNumber()}`,
@@ -47,4 +47,36 @@ export class S3Service {
         }
         return urls
     }
+    public startMultipartUpload = async (params:any): Promise<string>=>{
+        const command = new CreateMultipartUploadCommand({
+            Bucket:this.bucketName,
+            Key:params.Key
+        });
+        return (await s3Config.send(command)).UploadId
+      }
+      async uploadPart(params:any, uploadId: string, partNumber: number, body: Uint8Array): Promise<any> {
+        const command = new UploadPartCommand({
+          Bucket: this.bucketName,
+          Key: params.key,
+          UploadId: uploadId,
+          PartNumber: partNumber,
+          Body: body,
+        });
+    
+        return await s3Config.send(command);
+      }
+    
+      async completeMultipartUpload(params:any, uploadId: string, parts: { ETag: string; PartNumber: number }[]): Promise<string> {
+        const command = new CompleteMultipartUploadCommand({
+          Bucket: this.bucketName,
+          Key: params.key,
+          UploadId: uploadId,
+          MultipartUpload: {
+            Parts: parts,
+          },
+        });
+    
+        await s3Config.send(command);
+        return `https://${this.bucketName}.s3.${process.env.REGION}.amazonaws.com/` + params.Key
+      }
 }

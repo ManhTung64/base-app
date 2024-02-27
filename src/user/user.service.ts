@@ -12,6 +12,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { MailCode } from 'src/mail/dto/mail.dto';
 import { UserVerifyCodeDto } from './dto/code.dto';
 import { CodeService } from './code.service';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -47,7 +48,7 @@ export class UserService {
         // create default profile with null information
         const profile: Profile = await this.profileService.createDefaultProfile(newUser)
         await this.userRepository.update(newUser, profile)
-        return new UserDto(newUser.username, newUser.isActive, newUser.createAt)
+        return plainToClass(UserDto,newUser)
     }
     public async verifyUser (userVerifyCode:UserVerifyCodeDto):Promise<boolean>{
         const user:User = await this.userRepository.findOneById(parseInt(userVerifyCode.userId))
@@ -68,7 +69,9 @@ export class UserService {
         // check valid password
         else if (!await this.passwordService.verifyPassword(user.password, loginDto.password)) throw new BadRequestException('Information is invalid')
         // return with token
-        else return new UserTokenDto(user.username, user.isActive, user.createAt, await this.authService.createToken(user))
+        const userInfo:UserTokenDto = plainToClass(UserTokenDto,user)
+        userInfo.token = await this.authService.createToken(user)
+        return userInfo
     }
     public async updateProfile(updateDto: UpdateDto): Promise<Profile> {
         const user: User = await this.userRepository.findOneById(updateDto.id)

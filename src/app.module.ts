@@ -13,6 +13,7 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SchedulingModule } from './scheduling/scheduling.module';
 import { FileModule } from './file/file.module';
+import { dataSourceOptions } from 'postgres/data-source';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { FileModule } from './file/file.module';
         },
       }),
       inject: [ConfigService],
-    }),UserModule, TypeOrmModule.forRoot(ormconfig[0]), AuthModule, InterceptorModule, ConfigurationModule, PostModule, GroupModule, MailModule, SchedulingModule, FileModule],
+    }),UserModule, TypeOrmModule.forRoot(dataSourceOptions), AuthModule, InterceptorModule, ConfigurationModule, PostModule, GroupModule, MailModule, SchedulingModule, FileModule],
   controllers: [],
   providers: [AppGateway],
 })

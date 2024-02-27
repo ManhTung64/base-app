@@ -1,3 +1,4 @@
+import { Exclude, Expose } from "class-transformer";
 import { IsNotEmpty, IsStrongPassword, MinLength } from "class-validator";
 
 export class CreateUserDto{
@@ -22,10 +23,14 @@ export class UserDto{
     isActive:boolean
     createAt:Date
 }
-export class UserTokenDto extends UserDto{
+@Exclude()
+export class UserTokenDto{
+    @Expose()
     token:string
-    constructor(username:string,isActive:boolean,createAt:Date, token:string){
-        super(username,isActive,createAt)
-        this.token = token
-    }
+    @Expose()
+    username:string
+    @Expose()
+    isActive:boolean
+    @Expose()
+    createAt:Date
 }

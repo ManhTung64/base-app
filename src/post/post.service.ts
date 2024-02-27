@@ -6,6 +6,7 @@ import { ProfileRepository } from '../user/profile/profile.repository';
 import { Profile } from '../user/entities/profile.entity';
 import { UploadFile } from 'src/file/dto/file.dto';
 import { FileService } from 'src/file/file.service';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class PostService {
@@ -44,6 +45,11 @@ export class PostService {
     }
     public async getAllPost():Promise<PostContent[]>{
         const post:PostContent[] = await this.postRepository.findAll()
+        if (post.length == 0) throw new NotFoundException()
+        else return post
+    }
+    public async getPostsWithPagination (pagination:PaginationDto):Promise<PostContent[]>{
+        const post:PostContent[] = await this.postRepository.findWithPagination(pagination)
         if (post.length == 0) throw new NotFoundException()
         else return post
     }

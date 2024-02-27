@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, Patch, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, Patch, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { AuthenticationGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/role.guard';
@@ -9,6 +9,7 @@ import { PostContent } from './entities/post.entity';
 import { Request, Response } from 'express'
 import { CacheInterceptor } from '../interceptor/cache.interceptor';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('api/post')
 export class PostController {
@@ -57,6 +58,12 @@ export class PostController {
     @UseInterceptors(CacheInterceptor)
     async getAll(@Res() res: Response) {
         const data: PostContent[] = await this.postService.getAllPost()
+        res.status(HttpStatus.OK).json({ data })
+    }
+    @Get('getpostsforhome')
+    @UseInterceptors(CacheInterceptor)
+    async getForHome(@Query() pagination:PaginationDto, @Res() res: Response) {
+        const data: PostContent[] = await this.postService.getPostsWithPagination(pagination)
         res.status(HttpStatus.OK).json({ data })
     }
 }
